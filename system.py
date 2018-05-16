@@ -115,11 +115,6 @@ class system():
                 self.driver.switch_to.frame(
                     "rap-iframe-func-2c90e4df4c02ca32014c02f557d6002c")
                 self.driver.switch_to.frame("selEpList")
-                # 展开非并表的单位
-                if i == 351:
-                    elem = self.driver.find_element_by_id(
-                        "treeLeft_%s_switch" % i)
-                    elem.click()
                 # 选择单位
                 elem = self.driver.find_element_by_xpath(
                     "//ul[@id='treeLeft_1_ul']/li[%s]" % i)
@@ -146,7 +141,7 @@ class system():
                             elem = self.driver.find_element_by_xpath(
                                 "//select[@id='exportType']/option[%s]" % j)
                             elem.click()
-                            sleep(1)
+                            sleep(2)
                             print("准备下载")
                             if j == 5:
                                 elem = self.driver.find_element_by_xpath(
@@ -161,8 +156,8 @@ class system():
                                  "D:\\投资控股\\商业智能BI\\快报\\快报附表审核\\%s\\%s.xls" %
                                  (reportname, text + reportname))
                             break
-                        except:
-                            print("文件下载失败：", text)
+                        except Exception as e:
+                            print("文件下载失败：", text, e)
                             pass
                 print("下载结束")
                 sleep(1)
@@ -221,7 +216,7 @@ class system():
                 while True:
                     # 循环选取各个报表
                     try:
-                        if "统计表"  in self.dirt[str(j)]:
+                        if "统计表" in self.dirt[str(j)]:
                             reportname = self.dirt[str(j)].replace(
                                 "统计表", "明细表")
                         else:
