@@ -21,6 +21,12 @@ class system():
             '4': '银行贷款明细表',
             '5': '其他贷款明细表'
         }
+        self.dirt = {
+            '1': '存款基本表',
+            '2': '直接融资统计表',
+            '3': '银行贷款统计表',
+            '4': '其他贷款统计表'
+        }
         self.skip = skip
         self.driver = driver
 
@@ -100,9 +106,9 @@ class system():
         ActionChains(self.driver).double_click(elem).perform()
         sleep(2)
         self.driver.switch_to.default_content()
- 
-    #下载报表
-    def download(self):
+
+    #下载合并报表
+    def download_1(self):
         # 进入报表数据下载界面
         for i in range(self.start, self.end):
             if i not in self.skip:
@@ -124,7 +130,8 @@ class system():
                 self.driver.execute_script("arguments[0].scrollIntoView();",
                                            target)
                 text = elem.text
-                text = str(i) + "号" + self.year + "年" + text + "-"
+                text = str(
+                    i) + "号" + self.year + "年" + self.month + "月" + text + "-"
                 sleep(1)
                 self.driver.switch_to.parent_frame()
                 self.driver.switch_to.frame("mainFrame")
@@ -152,7 +159,7 @@ class system():
                             move("D:\\投资控股\\商业智能BI\\快报\\快报附表审核\\临时文件\\%s.xls" %
                                  reportname,
                                  "D:\\投资控股\\商业智能BI\\快报\\快报附表审核\\%s\\%s.xls" %
-                                 (reportname, text+reportname))
+                                 (reportname, text + reportname))
                             break
                         except:
                             print("文件下载失败：", text)
@@ -166,6 +173,79 @@ class system():
         elem = self.driver.find_element_by_id("treeLeft_1_span")
         elem.click()
         self.driver.switch_to.default_content()
+
+    def download_2(self):
+        for j in range(1, 5):
+            # 选择第一个非合并报表
+            self.driver.switch_to.frame(
+                "rap-iframe-func-2c90e4df4c02ca32014c02f557d6002c")
+            self.driver.switch_to.frame("selEpList")
+            elem = self.driver.find_element_by_xpath(
+                "//ul[@id='treeLeft_1_ul']/li[%s]" % self.skip[0])
+            elem.click()
+            # 退回报表选择界面
+            self.driver.switch_to.parent_frame()
+            self.driver.switch_to.frame("mainFrame")
+            # 选择具体报表
+            elem = self.driver.find_element_by_id("myTab")
+            elem.click()
+            sleep(2)
+            elem = self.driver.find_element_by_xpath(
+                "//ul[@id='menuList']/li[2]/a")
+            ActionChains(self.driver).move_to_element(elem).perform()
+            sleep(2)
+            elem = self.driver.find_element_by_xpath(
+                "//ul[@id='menuList']/li[2]/ul/li[%s]/a" % (j + 2))
+            ActionChains(self.driver).move_to_element(elem).perform()
+            sleep(1)
+            ActionChains(self.driver).double_click(elem).perform()
+            sleep(2)
+            for i in self.skip:
+                self.driver.switch_to.parent_frame()
+                self.driver.switch_to.frame("selEpList")
+                # 选择单位
+                elem = self.driver.find_element_by_xpath(
+                    "//ul[@id='treeLeft_1_ul']/li[%s]" % i)
+                elem.click()
+                # 控制滚动轴
+                target = self.driver.find_element_by_xpath(
+                    "//ul[@id='treeLeft_1_ul']/li[%s]" % i)
+                self.driver.execute_script("arguments[0].scrollIntoView();",
+                                           target)
+                text = elem.text
+                text = str(
+                    i) + "号" + self.year + "年" + self.month + "月" + text + "-"
+                sleep(1)
+                self.driver.switch_to.parent_frame()
+                self.driver.switch_to.frame("mainFrame")
+                while True:
+                    # 循环选取各个报表
+                    try:
+                        if "统计表"  in self.dirt[str(j)]:
+                            reportname = self.dirt[str(j)].replace(
+                                "统计表", "明细表")
+                        else:
+                            reportname = self.dirt[str(j)].replace(
+                                "基本表", "明细表")
+                        print(reportname)
+                        sleep(1)
+                        elem = self.driver.find_element_by_xpath(
+                            "//td[@id='excelBtn']/button[1]")
+                        elem.click()
+                        sleep(1)
+                        print("准备下载")
+                        sleep(1)
+                        move("D:\\投资控股\\商业智能BI\\快报\\快报附表审核\\临时文件\\%s.xls" %
+                             self.dirt[str(j)],
+                             "D:\\投资控股\\商业智能BI\\快报\\快报附表审核\\%s\\%s.xls" %
+                             (reportname, text + self.dirt[str(j)]))
+                        break
+                    except Exception as e:
+                        print("文件下载失败：", text, e)
+                        pass
+                print("下载结束")
+                sleep(1)
+            self.driver.switch_to.default_content()
 
 
 if __name__ == '__main__':
@@ -188,4 +268,5 @@ if __name__ == '__main__':
     test = system(n, a, year, month, skip, driver)
     test.log_on()
     test.select()
-    test.download()
+    #test.download_1()
+    test.download_2()
