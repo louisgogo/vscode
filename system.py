@@ -262,6 +262,7 @@ if __name__ == '__main__':
 
     test = system(n, a, year, month, skip, driver)
     test.log_on()
+    # test.select()
+    # test.download_1()
     test.select()
-    test.download_1()
     test.download_2()
