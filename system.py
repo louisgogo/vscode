@@ -256,13 +256,13 @@ if __name__ == '__main__':
     # a表示初始编号,skip参数为列表
     a = 1
     n = [1, 2, 4, 5]
-    year = '2018'
-    month = '4'
+    year = input("请输入年份")
+    month = input("请输入月份")
     skip = [5, 6, 19, 22, 23, 26, 27, 30, 36]
 
     test = system(n, a, year, month, skip, driver)
     test.log_on()
-    # test.select()
-    # test.download_1()
+    test.select()
+    test.download_1()
     test.select()
     test.download_2()
